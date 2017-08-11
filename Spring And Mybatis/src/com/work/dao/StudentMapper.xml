@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.work.dao.StudentMapper" >
+	
+	<resultMap type="student" id="result">
+		<id property="id" column="id" />
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="dateOfBirth" column="dob" />
+		<result property="hobbies" column="hobbies" />
+		<result property="email" column="email" />
+		<result property="state" column="state" />
+		<result property="city" column="city" />
+		<result property="gender" column="gender" />
+		<result property="userName" column="username" />
+		<result property="password" column="password" />
+		<result property="department.id" column="dept_id" />
+		<result property="skills" column="skills" />
+	</resultMap>
+	
+	<resultMap type="studentsearch" id="searchresult">
+		<id property="id" column="id"/>
+		<result property="firstName" column="first_name" />
+		<result property="lastName" column="last_name" />
+		<result property="dateOfBirth" column="dob" />
+		<result property="hobbies" column="hobbies" />
+		<result property="email" column="email" />
+		<result property="state" column="state" />
+		<result property="city" column="city" />
+		<result property="gender" column="gender" />
+		<result property="userName" column="username" />
+		<result property="password" column="password" />
+		<result property="deptValue" column="dept_value" />
+		<result property="skills" column="skills" />
+	</resultMap>
+	
+	<resultMap type="department" id="departmentresult">
+		<id property="id" column="id" />
+		<result property="deptValue" column="dept_value" />
+	</resultMap>
+	
+	<resultMap type="combotable" id="comboresult">
+		<id property="Id" column="id" />
+		<result property="tableField" column="tblField" />
+		<result property="value" column="cmbValue" />
+		<result property="text" column="cmbText" />
+	</resultMap>
+	
+	<insert id="insertStudent" parameterType="student" keyProperty="id">
+		INSERT into student(first_name, last_name, dob, hobbies, email, state, city, gender, username, password, dept_id, skills) 
+		VALUES(#{firstName}, #{lastName}, #{dateOfBirth}, #{hobbies}, #{email}, #{state}, #{city}, #{gender}, #{userName}, #{password}, #{department.id}, #{skills})	    
+	</insert>
+	
+	<select id="userLoginDetails" parameterType="student" resultMap="result" resultType="student">
+		SELECT * from student WHERE username = #{userName} AND password = #{password}
+	</select>
+	
+	<select id="selectAllStudents" resultType="studentsearch" resultMap="searchresult">
+		SELECT * from student_search
+	</select>
+	
+	<select id="departmentList" resultType="department" resultMap="departmentresult">
+		SELECT * from tbl_department
+	</select>
+	
+	<select id="skillsList" resultType="combotable" resultMap="comboresult">
+		SELECT * from combotable where tblField = "Skills"
+	</select>
+	
+	<select id="selectStates" resultType="combotable" resultMap="comboresult">
+		SELECT * from combotable where tblField = "State"
+	</select>
+	
+	<select id="selectCities" parameterType="String" resultType="combotable" resultMap="comboresult">
+		SELECT * from combotable where tblField = #{tableField}
+	</select>
+	
+	<update id="updateStudent" parameterType="student">
+		UPDATE student SET first_name = #{firstName},
+			last_name = #{lastName},
+			dob = #{dateOfBirth},
+			hobbies = #{hobbies},
+			email = #{email},
+			state = #{state},
+			city = #{city},
+			gender = #{gender},
+			username = #{userName},
+			password = #{password},
+			dept_id = #{department.id},
+			skills = #{skills}
+		WHERE id = #{id}
+	</update>
+	
+	<delete id="deleteStudent" parameterType="int">
+		DELETE FROM student WHERE id = #{id}
+	</delete>
+	
+	<select id="findById" parameterType="int" resultType="student" resultMap="result">
+		SELECT * FROM student where id = #{id}
+	</select>
+	
+	<select id="searchStudents" parameterType="student" resultType="studentsearch" resultMap="searchresult">
+		SELECT * FROM student_search
+		<if test="search == 'Gender'">
+			WHERE gender = #{secSearch}
+		</if>
+		<if test="search == 'Hobbies'">
+			WHERE hobbies LIKE "%"#{secSearch}"%"
+		</if>
+		<if test="search == 'State'">
+			WHERE state LIKE "%"#{secSearch}"%"
+		</if>
+	</select>
+	
+	<select id="isUsernameExists" resultType="student" resultMap="result" parameterType="String">
+		SELECT * FROM student WHERE username = #{userName}
+	</select>
+</mapper>
